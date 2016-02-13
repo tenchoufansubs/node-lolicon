@@ -1,0 +1,147 @@
+#!/usr/bin/env node
+// vim: set ft=javascript :
+
+var debug = require('debug')('lolicon:bin:lolicon');
+var request = require('request');
+
+var Lolicon = require('../index').Lolicon;
+
+var lol = new Lolicon(require('../config'));
+
+lol.on('error', function(err) {
+  debug(err.stack);
+});
+
+var triggerList = null;
+
+lol.on('refresh', function(msg) {
+  if (msg && msg.channel.type !== 'root') {
+    return;
+  }
+
+  var _this = lol;
+
+  debug('Get trigger list.');
+
+  lol.dropbox.triggers(function(err, triggers) {
+    if (err) {
+      return _this.emit('error', err);
+    }
+
+    triggerList = [];
+
+    triggers.forEach(function(triggerName) {
+      debug('Register trigger `'+triggerName+'`');
+
+      triggerList.push(triggerName);
+
+      lol.triggers.on(triggerName, function(msg) {
+        debug('Trigger: ' + triggerName);
+
+        var options;
+        var relayUrl = lol.discord.relayUrl;
+
+        if (relayUrl) {
+          debug('Relay trigger.');
+
+          options = {
+            uri: relayUrl,
+            json: true,
+            body: {
+              trigger: triggerName,
+              channelId: msg.channel.id,
+              messageId: msg.id,
+              _message: msg,
+            },
+          };
+
+          return request.post(options, function(err, response, body) {
+            if (err) {
+              return _this.emit('error', err);
+            }
+
+            debug('Relayed.');
+          });
+        }
+
+        debug('Select random file.');
+        lol.dropbox.randomFile(triggerName, function(err, file) {
+          if (err) {
+            return lol.emit('error', err);
+          }
+
+          debug('Send file: ' + JSON.stringify(file));
+
+          msg.reply(file, function(err) {
+            if (err) {
+              return lol.emit('error', err);
+            }
+
+            // FIXME: provide more details.
+            debug('Reply sent.');
+          });
+
+        });
+      });
+    });
+
+    debug('Triggers registered.');
+  });
+});
+
+lol.on('ready', function() {
+  debug('Ready.');
+  this.emit('refresh');
+});
+
+lol.on('exit', function() {
+  debug('Exit.');
+
+  var _this = this;
+
+  debug('Close Discord client.');
+  this.discord.close(function(err) {
+    if (err) {
+      return _this.emit('error', err);
+    }
+
+    debug('Discord client closed.');
+  });
+});
+
+lol.on('message', function(msg) {
+  var body = msg.body;
+  if (typeof body !== 'string') {
+    debug("There's some weird shit in here, m8.");
+    return;
+  }
+
+  body = body.trim();
+  if (!body) {
+    return;
+  }
+
+  if (body[0] !== this.commandPrefix) {
+    return;
+  }
+
+  body = body.substring(1);
+
+  if (body === 'refresh') {
+    return this.emit('refresh', msg);
+  }
+
+  var t = body.split(' ')[0];
+
+  if (triggerList.indexOf(t) > -1) {
+    return this.triggers.emit(t, msg);
+  }
+});
+
+lol.open(function(err, done) {
+  if (err) {
+    throw err;
+  }
+
+  // ...
+});

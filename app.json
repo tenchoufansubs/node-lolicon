@@ -1,0 +1,11 @@
+{
+  "name": "node-lolicon",
+  "description": "A Discord bot.",
+  "keywords": [
+    "lolicon",
+    "bot",
+    "discord"
+  ],
+  "website": "https://github.com/tenchoufansubs/go-lolicon",
+  "repository": "https://github.com/tenchoufansubs/go-lolicon"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "lolicon",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "./bin/lolicon-server"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "debug": "^2.2.0",
+    "discord.js": "^6.0.0",
+    "dropbox": "^0.10.3",
+    "expire-memory": "0.0.3",
+    "express": "^4.13.4",
+    "extend": "^3.0.0",
+    "html-entities": "^1.2.0",
+    "moment": "^2.11.2",
+    "morgan": "^1.6.1",
+    "request": "^2.69.0"
+  }
+}
