@@ -14,6 +14,27 @@ lol.on('error', function(err) {
 
 var triggerList = null;
 
+lol.on('help', function(msg) {
+  var _this = lol;
+
+  var reply;
+
+  if (triggerList && triggerList.length > 0) {
+    reply = 'List of triggers: ' + triggerList.join(', ');
+  } else {
+    reply = 'No available triggers.';
+  }
+
+  msg.reply(reply, function(err) {
+    if (err) {
+      return lol.emit('error', err);
+    }
+
+    // FIXME: provide more details.
+    debug('Reply sent.');
+  });
+});
+
 lol.on('refresh', function(msg) {
   if (msg && msg.channel.type !== 'root') {
     return;
@@ -129,6 +150,10 @@ lol.on('message', function(msg) {
 
   if (body === 'refresh') {
     return this.emit('refresh', msg);
+  }
+
+  if (body === 'help') {
+    return this.emit('help', msg);
   }
 
   var t = body.split(' ')[0];

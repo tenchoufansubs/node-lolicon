@@ -19,6 +19,10 @@ data in order to reduce the bandwidth usage.
 
 This command forces a cache reload.
 
+#### `help`
+
+Displays the available commands.
+
 ### Images
 
 They *Image Triggers* depend on the content of a `/Lolicon/Triggers`
