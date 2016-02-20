@@ -25,10 +25,10 @@ Displays the available commands.
 
 ### Images
 
-They *Image Triggers* depend on the content of a `/Lolicon/Triggers`
-directory in a Dropbox account.
+They *Image Triggers* depend on the content of a `Triggers` directory
+in the app's root directory at Dropbox.
 
-If there's a `/Lolicon/Triggers/Headpat` directory, then the `!headpat`
+If there's a `Triggers/Headpat` directory, then the `!headpat`
 trigger will be available.
 
 When you execute an image trigger, a random image is selected from its
